@@ -108,7 +108,8 @@ def produtos():
     )
 
 
-# Cria o banco antes de iniciar o servidor
+# Cria o banco de dados quando a aplicação é iniciada
+criar_banco()
+
 if __name__ == "__main__":
-    criar_banco()
     app.run(debug=True)
