@@ -1,89 +1,194 @@
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Cadastro de Produtos</title>
+    <title>Controle de Estoque</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #222222;
+            padding: 20px;
+        }
+
+        input {
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 3px solid #005fcc;
+            outline-offset: 3px;
+        }
+
+        .alto-contraste {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .alto-contraste input {
+            background-color: #111111;
+            color: #ffffff;
+            border: 2px solid #ffff00;
+        }
+
+        .alto-contraste button {
+            background-color: #ffff00;
+            color: #000000;
+            border: 2px solid #ffffff;
+            font-weight: bold;
+        }
+
+        .alto-contraste table,
+        .alto-contraste th,
+        .alto-contraste td {
+            border: 2px solid #ffff00;
+        }
+
+        .alto-contraste a {
+            color: #ffff00;
+        }
+
+        .alto-contraste input:focus-visible,
+        .alto-contraste button:focus-visible {
+            outline: 3px solid #00ffff;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #333333;
+        }
+
+        .mensagem {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Controle de Estoque</h1>
+    <a href="#conteudo">Pular para o conteúdo principal</a>
 
-    <h2>Cadastrar Produto</h2>
+    <main id="conteudo">
 
-    <!-- Formulário que envia os dados ao Flask -->
-    <form action="/produtos" method="POST">
+        <h1>Controle de Estoque</h1>
 
-        <label for="nome">Nome do produto:</label>
-        <input type="text" id="nome" name="nome" required>
+        <button
+            type="button"
+            id="botao-contraste"
+            aria-pressed="false">
+            Ativar alto contraste
+        </button>
 
-        <br><br>
+        <h2>Cadastrar Produto</h2>
 
-        <label for="codigo">Código:</label>
-        <input type="text" id="codigo" name="codigo" required>
+        <form action="/produtos" method="POST">
 
-        <br><br>
+            <label for="nome">Nome do produto:</label><br>
+            <input type="text" id="nome" name="nome" required>
+            <br><br>
 
-        <label for="categoria">Categoria:</label>
-        <input type="text" id="categoria" name="categoria" required>
+            <label for="codigo">Código:</label><br>
+            <input type="text" id="codigo" name="codigo" required>
+            <br><br>
 
-        <br><br>
+            <label for="categoria">Categoria:</label><br>
+            <input type="text" id="categoria" name="categoria" required>
+            <br><br>
 
-        <label for="preco">Preço:</label>
-        <input type="number" id="preco" name="preco"
-               step="0.01" min="0" required>
+            <label for="preco">Preço:</label><br>
+            <input type="number" id="preco" name="preco"
+                   step="0.01" min="0" required>
+            <br><br>
 
-        <br><br>
+            <label for="quantidade">Quantidade:</label><br>
+            <input type="number" id="quantidade" name="quantidade"
+                   min="0" required>
+            <br><br>
 
-        <label for="quantidade">Quantidade:</label>
-        <input type="number" id="quantidade" name="quantidade"
-               min="0" required>
+            <button type="submit">Cadastrar Produto</button>
 
-        <br><br>
+        </form>
 
-        <button type="submit">Cadastrar Produto</button>
+        {% if mensagem %}
+            <p class="mensagem" role="status" aria-live="polite">
+                {{ mensagem }}
+            </p>
+        {% endif %}
 
-    </form>
+        <hr>
 
-    <!-- Exibe mensagens do sistema -->
-    {% if mensagem %}
-        <p>{{ mensagem }}</p>
-    {% endif %}
+        <h2>Produtos cadastrados</h2>
 
-    <hr>
+        {% if produtos %}
 
-    <h2>Produtos cadastrados</h2>
+            <table>
+                <caption>Lista de produtos cadastrados no estoque</caption>
 
-    {% if produtos %}
-        <table border="1" cellpadding="8">
+                <thead>
+                    <tr>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Preço</th>
+                        <th scope="col">Quantidade</th>
+                    </tr>
+                </thead>
 
-            <tr>
-                <th>Nome</th>
-                <th>Código</th>
-                <th>Categoria</th>
-                <th>Preço</th>
-                <th>Quantidade</th>
-            </tr>
+                <tbody>
+                    {% for produto in produtos %}
+                        <tr>
+                            <td>{{ produto.nome }}</td>
+                            <td>{{ produto.codigo }}</td>
+                            <td>{{ produto.categoria }}</td>
+                            <td>R$ {{ "%.2f"|format(produto.preco) }}</td>
+                            <td>{{ produto.quantidade }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-            {% for produto in produtos %}
-                <tr>
-                    <td>{{ produto.nome }}</td>
-                    <td>{{ produto.codigo }}</td>
-                    <td>{{ produto.categoria }}</td>
-                    <td>R$ {{ "%.2f"|format(produto.preco) }}</td>
-                    <td>{{ produto.quantidade }}</td>
-                </tr>
-            {% endfor %}
+        {% else %}
+            <p>Nenhum produto cadastrado.</p>
+        {% endif %}
 
-        </table>
-    {% else %}
-        <p>Nenhum produto cadastrado.</p>
-    {% endif %}
+    </main>
+
+    <script>
+        const botaoContraste = document.getElementById("botao-contraste");
+
+        botaoContraste.addEventListener("click", function () {
+
+            document.body.classList.toggle("alto-contraste");
+
+            const ativado = document.body.classList.contains("alto-contraste");
+
+            botaoContraste.setAttribute("aria-pressed", ativado);
+
+            if (ativado) {
+                botaoContraste.textContent = "Desativar alto contraste";
+            } else {
+                botaoContraste.textContent = "Ativar alto contraste";
+            }
+
+        });
+    </script>
 
 </body>
-
 </html>
